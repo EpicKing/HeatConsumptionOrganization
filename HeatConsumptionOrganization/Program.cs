@@ -51,5 +51,17 @@ namespace HeatConsumptionOrganization
             var comment = "Результат выполнения запроса на ";
             Print(comment, queryLinq.ToList());
         }
+
+        static void Update(Context dbContext)
+        {
+
+        }
+
+        static void Delete(Context dbContext)
+        {
+
+        }
+
+
     }
 }
