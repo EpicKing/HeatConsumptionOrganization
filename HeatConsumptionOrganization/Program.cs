@@ -54,7 +54,7 @@ namespace HeatConsumptionOrganization
 
         static void Update(Context dbContext)
         {
-
+            var text = "";
         }
 
         static void Delete(Context dbContext)
