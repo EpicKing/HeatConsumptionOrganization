@@ -32,12 +32,12 @@ namespace HeatConsumptionOrganization.Models
                     DirectorFullName = surnames[rng.Next(surnames.Length - 1)] + " " +
                                        alphabet[rng.Next(alphabet.Length - 1)] + ". " +
                                        alphabet[rng.Next(alphabet.Length - 1)] + ".",
-                    DirectorPhoneNumber = "+37544" + (rng.Next(8999999) + 100000),
+                    DirectorPhoneNumber = "+37544" + rng.Next(1000000, 9999999),
 
                     ChiefPowerEngineerFullName = surnames[rng.Next(surnames.Length - 1)] + " " +
                                                  alphabet[rng.Next(alphabet.Length - 1)] + ". " +
                                                  alphabet[rng.Next(alphabet.Length - 1)] + ".",
-                    ChiefPowerEngineerPhoneNumber = "+37544" + (rng.Next(8999999) + 100000)
+                    ChiefPowerEngineerPhoneNumber = "+37544" + rng.Next(1000000, 9999999)
                 });
             }
 
