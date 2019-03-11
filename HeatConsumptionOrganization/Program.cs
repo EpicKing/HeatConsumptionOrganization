@@ -4,6 +4,7 @@ using System.Linq;
 using HeatConsumptionOrganization.Models;
 using Microsoft.EntityFrameworkCore.Internal;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
 namespace HeatConsumptionOrganization
 {
@@ -29,6 +30,26 @@ namespace HeatConsumptionOrganization
             }
             Console.WriteLine();
             Console.ReadKey();
+        }
+        // Need fixes
+        static void Second(Context dbContext)
+        {
+            var queryLinq = from manufacturedProduct in dbContext.ManufacturedProducts
+                where manufacturedProduct.Year < 2017 && manufacturedProduct.Quarter == 3
+                orderby manufacturedProduct.TotalProduced descending
+                select new
+                {
+                    manufacturedProduct.TotalProduced,
+                    manufacturedProduct.Year,
+                    manufacturedProduct.Quarter,
+                    manufacturedProduct.OrganizationID
+                };
+
+        }
+
+        static void Third(Context dContext)
+        {
+            var queryLinq = (from heatConsumption in dContext.HeatConsumptions select heatConsumption.TotalConsumed).Average();
         }
 
         static void SelectAllOrganizations(Context dbContext)
@@ -57,7 +78,7 @@ namespace HeatConsumptionOrganization
         {
             var organization = new Organization
             {   
-                Name = "ОАО ДУЛЮК И КИРПИЧИ",
+                Name = "ООО ДУЛЮК И КИРПИЧИ",
                 TypeOfOwnership = "частная собственность",
                 Address = "Гомель",
                 DirectorFullName = "Дулюк С.И.",
