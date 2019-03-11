@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using HeatConsumptionOrganization.Models;
+using Microsoft.EntityFrameworkCore.Internal;
 using Remotion.Linq.Clauses;
 
 namespace HeatConsumptionOrganization
@@ -52,13 +53,84 @@ namespace HeatConsumptionOrganization
             Print(comment, queryLinq.ToList());
         }
 
+        static void Insert(Context dbContext)
+        {
+            var organization = new Organization
+            {   
+                Name = "ОАО ДУЛЮК И КИРПИЧИ",
+                TypeOfOwnership = "частная собственность",
+                Address = "Гомель",
+                DirectorFullName = "Дулюк С.И.",
+                DirectorPhoneNumber = "+375449876347",
+                ChiefPowerEngineerFullName = "Маркевич В.В.",
+                ChiefPowerEngineerPhoneNumber = "+375445463978"
+            };
+
+            var typeOfProduct = new TypeOfProduct
+            {
+                Name = "кирпичи",
+                Unit = "шт."
+            };
+
+            dbContext.Organizations.Add(organization);
+            dbContext.TypeOfProducts.Add(typeOfProduct);
+            dbContext.SaveChanges();
+        }
+
         static void Update(Context dbContext)
         {
-            var text = "";
+            var oldOrganizationName = "ОАО ДУЛЮК И КИРПИЧИ";
+
+            var updateOrganization = dbContext.Organizations.FirstOrDefault(organization => organization.Name == oldOrganizationName);
+
+            if (updateOrganization != null)
+            {
+                updateOrganization.Name = "ОАО СТЕПАН И КИРПИЧИ";
+            }
+
+            dbContext.SaveChanges();
+            Console.WriteLine("Обновление данных произведено успешно");
+
         }
 
         static void Delete(Context dbContext)
         {
+            var organizationToRemove = "ООО Стройтех";
+            int? id = null;
+            foreach (var dbContextOrganization in dbContext.Organizations)
+            {
+                if (dbContextOrganization.Name == organizationToRemove)
+                {
+                    id = dbContextOrganization.OrganizationID;
+                }
+            }
+
+            if (id != null)
+            {
+                var type = dbContext.TypeOfProducts.Where(product => product.OrganizationID == id);
+                var manufactured = dbContext.ManufacturedProducts.Where(product => product.ManufacturedProductID == id);
+                var heatCons = dbContext.HeatConsumptions.Where(consumption => consumption.HeatConsumptionID == id);
+                var heatConsRate = dbContext.HeatConsumptionRates.Where(rate => rate.HeatConsumptionRateID == id);
+
+                var organizationTo =
+                    dbContext.Organizations.Where(organization => organization.Name == organizationToRemove);
+
+                dbContext.TypeOfProducts.RemoveRange(type);
+                dbContext.ManufacturedProducts.RemoveRange(manufactured);
+                dbContext.HeatConsumptions.RemoveRange(heatCons);
+                dbContext.HeatConsumptionRates.RemoveRange(heatConsRate);
+                dbContext.SaveChanges();
+
+                dbContext.Organizations.RemoveRange(organizationTo);
+                dbContext.SaveChanges();
+
+                Console.WriteLine("Удаление данных произведено успешно");
+            }
+            else
+            {
+                Console.WriteLine("Не удалось удалить данные: Организации с таким именем не существует");
+            }
+
 
         }
 
