@@ -8,7 +8,7 @@ namespace HeatConsumptionOrganization
     {
         public int HeatConsumptionRateID { get; set; }
 
-        public int QuarterConsuptionRate { get; set; }
+        public int QuarterConsumptionRate { get; set; }
 
         public int Year { get; set; }
 

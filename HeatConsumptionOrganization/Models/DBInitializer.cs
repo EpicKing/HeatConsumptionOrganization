@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace HeatConsumptionOrganization.Models
 {
@@ -9,6 +10,11 @@ namespace HeatConsumptionOrganization.Models
         public static void Initialize(Context dbContext, int numberOfRecords)
         {
             dbContext.Database.EnsureCreated();
+
+            if (dbContext.Organizations.Any())
+            {
+                return;
+            }
 
             var rng = new Random();
 
@@ -95,7 +101,7 @@ namespace HeatConsumptionOrganization.Models
             {
                 dbContext.HeatConsumptionRates.Add(new HeatConsumptionRate
                 {
-                    QuarterConsuptionRate = rng.Next(1, 3),
+                    QuarterConsumptionRate = rng.Next(1, 3),
                     Year = rng.Next(2005, 2018),
                     Quarter = rng.Next(1, 4),
                     OrganizationID = rng.Next(1, 4),

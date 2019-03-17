@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using HeatConsumptionOrganization.Models;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -16,21 +17,124 @@ namespace HeatConsumptionOrganization
             {
                 var numberOfRecords = Convert.ToInt32(Console.ReadLine());
                 DBInitializer.Initialize(dbContext, numberOfRecords);
+                SelectAllOrganizations(dbContext);
             }
+
             Console.WriteLine("Hello World!");
         }
 
+       
         static void Print(string sqlText, IEnumerable items)
         {
-            Console.WriteLine(sqlText);
-            Console.WriteLine("Записи: ");
+            // Heading
+            var attributes = new string[0];
+
+            // Stores the length of the longest words
+            var longestWords = new int[0];
+
+            // Create array for body
+            var numberOfQueries = 0;
+            var tuples = new string[numberOfQueries][];
+
+            // Flag to fill the heading
+            var isFirstTry = true;
+
             foreach (var item in items)
             {
-                Console.WriteLine(item.ToString());
+                var allWordsList = new List<string>();
+
+                numberOfQueries++;
+                Array.Resize(ref tuples, numberOfQueries);
+
+                // get Key-Value
+                var cleanItem = item.ToString().Remove(0, 1);
+                cleanItem = cleanItem.Remove(cleanItem.Length - 1);
+                var keyValueStrings = cleanItem.Split(',');
+
+                foreach (var keyValue in keyValueStrings)
+                {
+                    var keyValueSplit = keyValue.Split("=");
+                    allWordsList.AddRange(keyValueSplit);
+                }
+
+                if (isFirstTry)
+                {
+                    var columnList = new List<string>();
+                    isFirstTry = false;
+                    for (var i = 0; i < allWordsList.ToArray().Length; i += 2)
+                    {
+                        columnList.Add(allWordsList[i]);
+                        attributes = columnList.ToArray();
+                        Array.Resize(ref longestWords, attributes.Length);
+                        for (var j = 0; j < attributes.Length; j++)
+                        {
+                            longestWords[j] = attributes[j].Length;
+                        }
+                    }
+                }
+
+                var rowList = new List<string>();
+
+                for (var i = 1; i < allWordsList.ToArray().Length; i += 2)
+                {
+                    rowList.Add(allWordsList[i]);
+                }
+
+                for (var i = 0; i < rowList.ToArray().Length; i++)
+                {
+                    if (rowList[i].Length > longestWords[i])
+                    {
+                        longestWords[i] = rowList[i].Length;
+                    }
+                }
+
+                tuples[numberOfQueries - 1] = new string[rowList.ToArray().Length];
+
+                for (var n = 0; n < rowList.ToArray().Length; n++)
+                {
+                    tuples[numberOfQueries - 1][n] = rowList[n];
+                }
             }
+
+            // Create frame for table
+            var frame = "";
+
+            for (var i = 0; i < attributes.Length; i++)
+            {
+                frame += "+";
+                for (var j = 0; j < attributes[i].PadRight(longestWords[i] + 2).Length; j++)
+                {
+                    frame += "-";
+                }
+            }
+
+            frame += "+";
+
+            Console.WriteLine(frame);
+
+            // Draw attributes
+            for (var h = 0; h < attributes.Length; h++)
+            {
+                Console.Write("| " + attributes[h].PadRight(longestWords[h]) + " ");
+            }
+            Console.Write("|");
+
             Console.WriteLine();
-            Console.ReadKey();
+            Console.WriteLine(frame);
+            
+            // Draw tuples
+            for (var k = 0; k < tuples.Length; k++)
+            {
+                for (var j = 0; j < tuples[k].Length; j++)
+                {
+                    Console.Write("| " + tuples[k][j].PadRight(longestWords[j]) + " ");
+                }
+                Console.Write("|");
+                Console.WriteLine();
+                Console.WriteLine(frame);
+            }
         }
+
         // Need fixes
         static void Second(Context dbContext)
         {
@@ -55,10 +159,10 @@ namespace HeatConsumptionOrganization
         static void SelectAllOrganizations(Context dbContext)
         {
             var queryLinq = from organization in dbContext.Organizations
-                join typeOfProduct in dbContext.TypeOfProducts 
-                    on organization.OrganizationID equals typeOfProduct.OrganizationID
-                where organization.Address == "Гомель"
-                orderby organization.DirectorFullName descending
+                //join typeOfProduct in dbContext.TypeOfProducts 
+                //    on organization.OrganizationID equals typeOfProduct.OrganizationID
+                //where organization.Address == "Гомель"
+                //orderby organization.DirectorFullName descending
                 select new
                 {
                     Название = organization.Name,
