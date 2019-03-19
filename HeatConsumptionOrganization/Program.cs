@@ -15,17 +15,59 @@ namespace HeatConsumptionOrganization
         {
             using (var dbContext = new Context())
             {
+                Console.WriteLine("Введите количество записей для добавления");
                 var numberOfRecords = Convert.ToInt32(Console.ReadLine());
-                DBInitializer.Initialize(dbContext, numberOfRecords);
-                SelectAllOrganizations(dbContext);
-            }
+                Console.WriteLine(DBInitializer.Initialize(dbContext, numberOfRecords));
 
-            Console.WriteLine("Hello World!");
+                Console.WriteLine("====== Будет выполнена выборка данных (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                SelectAllOrganizations(dbContext);
+
+                Console.WriteLine("====== Будет выполнена выборка данных (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                SelectOrganizationsByAddress(dbContext);
+
+                Console.WriteLine("====== Будет выполнена группировка данных (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                HeatConsumptionGroupBy(dbContext);
+
+                Console.WriteLine("====== Будет выполнена выборка данных (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                SelectOneToMany(dbContext);
+
+                Console.WriteLine("====== Будет выполнена выборка данных (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                SelectOneToManyWithFilter(dbContext);
+
+                Console.WriteLine("====== Будет выполнена вставка данных в \"ОДИН\" (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                InsertIntoOnes(dbContext);
+
+                Console.WriteLine("====== Будет выполнена вставка данных в \"МНОГО\" (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                InsertIntoManys(dbContext);
+
+                Console.WriteLine("====== Будет выполнено удаление данных в \"ОДИН\" (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                DeleteFromOnes(dbContext);
+
+                Console.WriteLine("====== Будет выполнено удаление данных в \"МНОГО\" (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                DeleteFromManys(dbContext);
+
+                Console.WriteLine("====== Будет выполнено обновление данных (нажмите любую клавишу) ========");
+                Console.ReadKey();
+                Update(dbContext);
+
+                Console.ReadKey();
+            }
         }
 
        
         static void Print(string sqlText, IEnumerable items)
         {
+            Console.WriteLine(sqlText);
+
             // Heading
             var attributes = new string[0];
 
@@ -138,10 +180,6 @@ namespace HeatConsumptionOrganization
         static void SelectAllOrganizations(Context dbContext)
         {
             var queryLinq = from organization in dbContext.Organizations
-              //  join typeOfProduct in dbContext.TypeOfProducts 
-               // on organization.OrganizationID equals typeOfProduct.OrganizationID
-               // where organization.Address == "Гомель"
-               // orderby organization.DirectorFullName descending
                 select new
                 {
                     Id = organization.OrganizationID,
@@ -152,16 +190,12 @@ namespace HeatConsumptionOrganization
                     Телефон_руководителя = organization.DirectorPhoneNumber,
                     ФИО_главного_энергетика = organization.ChiefPowerEngineerFullName,
                     Телефон_главного_энергетика = organization.ChiefPowerEngineerPhoneNumber,
-                  //  Вид_продукции = typeOfProduct.Name,
-                   // Единица_измерения = typeOfProduct.Unit
-
                 };
 
-            var comment = "Результат выполнения запроса на ";
-            Print(comment, queryLinq.ToList());
+            Print("1. Список организаций: ", queryLinq.ToList());
         }
 
-        static void Second(Context dbContext)
+        static void SelectOrganizationsByAddress(Context dbContext)
         {
             var queryLinq = from organization in dbContext.Organizations
                 where organization.Address == "Гомель"
@@ -177,25 +211,10 @@ namespace HeatConsumptionOrganization
                     Телефон_главного_энергетика = organization.ChiefPowerEngineerPhoneNumber,
                 };
 
-            var comment = "Результат выполнения запроса на ";
-            Print(comment, queryLinq.ToList());
-
-
-
-            //var queryLinq = from manufacturedProduct in dbContext.ManufacturedProducts
-            //    where manufacturedProduct.Year < 2017 && manufacturedProduct.Quarter == 3
-            //    orderby manufacturedProduct.TotalProduced descending
-            //    select new
-            //    {
-            //        manufacturedProduct.TotalProduced,
-            //        manufacturedProduct.Year,
-            //        manufacturedProduct.Quarter,
-            //        manufacturedProduct.OrganizationID
-            //    };
-
+            Print("2. Список организаций расположенных в Гомеле: ", queryLinq.ToList());
         }
 
-        static void Third(Context dContext)
+        static void HeatConsumptionGroupBy(Context dContext)
         {
             var queryLinq = from heatConsumption in dContext.HeatConsumptions
                 group heatConsumption by heatConsumption.TotalConsumed
@@ -213,7 +232,7 @@ namespace HeatConsumptionOrganization
             }
         }
 
-        static void Fourth(Context dbContext)
+        static void SelectOneToMany(Context dbContext)
         {
             var queryLinq = from organization in dbContext.Organizations
                 join manufacturedProduct in dbContext.ManufacturedProducts 
@@ -227,11 +246,10 @@ namespace HeatConsumptionOrganization
                     Всего_произведено = manufacturedProduct.TotalProduced
                 };
 
-            var comment = "Результат выполнения запроса на ";
-            Print(comment, queryLinq.ToList());
+            Print("4. Количество произведённой продукции организацией: ", queryLinq.ToList());
         }
 
-        static void Fifth(Context dbContext)
+        static void SelectOneToManyWithFilter(Context dbContext)
         {
             var queryLinq = from organization in dbContext.Organizations
                 join manufacturedProduct in dbContext.ManufacturedProducts 
@@ -246,11 +264,10 @@ namespace HeatConsumptionOrganization
                     Всего_произведено = manufacturedProduct.TotalProduced
                 };
 
-            var comment = "Результат выполнения запроса на ";
-            Print(comment, queryLinq.ToList());
+            Print("5. Организации отфильтрованные по частной собственности: ", queryLinq.ToList());
         }
 
-        static void Insert(Context dbContext)
+        static void InsertIntoOnes(Context dbContext)
         {
             var organization = new Organization
             {   
@@ -263,40 +280,33 @@ namespace HeatConsumptionOrganization
                 ChiefPowerEngineerPhoneNumber = "+375445463978"
             };
 
-
             dbContext.Organizations.Add(organization);
             dbContext.SaveChanges();
+
+            Console.WriteLine("6. Была произведена вставка данных в таблину на стороне ОДИН\n");
         }
 
-        static void Seventh(Context dbContext)
+        static void InsertIntoManys(Context dbContext)
         {
+            var rng = new Random();
+
+            var idCount = (from organization in dbContext.Organizations select organization.OrganizationID).Last();
+
             var typeOfProduct = new TypeOfProduct
             {
                 Name = "кирпичи",
-                Unit = "шт."
+                Unit = "шт.",
+                OrganizationID = rng.Next(1, idCount)
             };
 
             dbContext.TypeOfProducts.Add(typeOfProduct);
             dbContext.SaveChanges();
+
+            Console.WriteLine("7. Была произведена вставка данных в таблину на стороне МНОГО\n");
         }
 
-        static void Update(Context dbContext)
-        {
-            var oldOrganizationName = "ОАО ДУЛЮК И КИРПИЧИ";
 
-            var updateOrganization = dbContext.Organizations.FirstOrDefault(organization => organization.Name == oldOrganizationName);
-
-            if (updateOrganization != null)
-            {
-                updateOrganization.Name = "ОАО СТЕПАН И КИРПИЧИ";
-            }
-
-            dbContext.SaveChanges();
-            Console.WriteLine("Обновление данных произведено успешно");
-
-        }
-
-        static void Delete(Context dbContext)
+        static void DeleteFromOnes(Context dbContext)
         {
             var organizationToRemove = "ООО Стройтех";
             int? id = null;
@@ -327,16 +337,42 @@ namespace HeatConsumptionOrganization
                 dbContext.Organizations.RemoveRange(organizationTo);
                 dbContext.SaveChanges();
 
-                Console.WriteLine("Удаление данных произведено успешно");
+                Console.WriteLine("8. Удаление данных прошло успешно\n");
             }
             else
             {
-                Console.WriteLine("Не удалось удалить данные: Организации с таким именем не существует");
+                Console.WriteLine("8. Не удалось удалить данные: Организации с таким именем не существует\n");
             }
 
 
         }
 
+        static void DeleteFromManys(Context dbContext)
+        {
+            var yearForManufacturedProduct = 2017;
+            var year = dbContext.ManufacturedProducts.Where(manufacturedProduct =>
+                manufacturedProduct.Year == yearForManufacturedProduct);
 
+            dbContext.ManufacturedProducts.RemoveRange(year);
+            dbContext.SaveChanges();
+
+            Console.WriteLine("9. Удаление данных прошло успешно\n");
+        }
+
+        static void Update(Context dbContext)
+        {
+            var oldOrganizationName = "ООО ДУЛЮК И КИРПИЧИ";
+
+            var updateOrganization = dbContext.Organizations.FirstOrDefault(organization => organization.Name == oldOrganizationName);
+
+            if (updateOrganization != null)
+            {
+                updateOrganization.Name = "ООО СТЕПАН И КИРПИЧИ";
+
+                Console.WriteLine("10. Обновление данных прошло успешно");
+            }
+
+            dbContext.SaveChanges();
+        }
     }
 }

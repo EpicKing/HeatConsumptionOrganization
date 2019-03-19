@@ -7,13 +7,13 @@ namespace HeatConsumptionOrganization.Models
 {
     class DBInitializer
     {
-        public static void Initialize(Context dbContext, int numberOfRecords)
+        public static string Initialize(Context dbContext, int numberOfRecords)
         {
             dbContext.Database.EnsureCreated();
 
             if (dbContext.Organizations.Any())
             {
-                return;
+                return "База данных уже заполнена, данные не добавлены";
             }
 
             var rng = new Random();
@@ -113,6 +113,7 @@ namespace HeatConsumptionOrganization.Models
 
             dbContext.SaveChanges();
 
+            return "База данных успешно заполнена";
         }
     }
 }
