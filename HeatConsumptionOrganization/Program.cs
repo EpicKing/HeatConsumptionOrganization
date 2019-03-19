@@ -135,43 +135,115 @@ namespace HeatConsumptionOrganization
             }
         }
 
-        // Need fixes
-        static void Second(Context dbContext)
-        {
-            var queryLinq = from manufacturedProduct in dbContext.ManufacturedProducts
-                where manufacturedProduct.Year < 2017 && manufacturedProduct.Quarter == 3
-                orderby manufacturedProduct.TotalProduced descending
-                select new
-                {
-                    manufacturedProduct.TotalProduced,
-                    manufacturedProduct.Year,
-                    manufacturedProduct.Quarter,
-                    manufacturedProduct.OrganizationID
-                };
-
-        }
-
-        static void Third(Context dContext)
-        {
-            var queryLinq = (from heatConsumption in dContext.HeatConsumptions select heatConsumption.TotalConsumed).Average();
-        }
-
         static void SelectAllOrganizations(Context dbContext)
         {
             var queryLinq = from organization in dbContext.Organizations
-                //join typeOfProduct in dbContext.TypeOfProducts 
-                //    on organization.OrganizationID equals typeOfProduct.OrganizationID
-                //where organization.Address == "Гомель"
-                //orderby organization.DirectorFullName descending
+              //  join typeOfProduct in dbContext.TypeOfProducts 
+               // on organization.OrganizationID equals typeOfProduct.OrganizationID
+               // where organization.Address == "Гомель"
+               // orderby organization.DirectorFullName descending
                 select new
                 {
+                    Id = organization.OrganizationID,
                     Название = organization.Name,
                     Форма_собственности = organization.TypeOfOwnership,
                     Адрес = organization.Address,
                     ФИО_руководителя = organization.DirectorFullName,
                     Телефон_руководителя = organization.DirectorPhoneNumber,
                     ФИО_главного_энергетика = organization.ChiefPowerEngineerFullName,
-                    Телефон_главного_энергетика = organization.ChiefPowerEngineerPhoneNumber
+                    Телефон_главного_энергетика = organization.ChiefPowerEngineerPhoneNumber,
+                  //  Вид_продукции = typeOfProduct.Name,
+                   // Единица_измерения = typeOfProduct.Unit
+
+                };
+
+            var comment = "Результат выполнения запроса на ";
+            Print(comment, queryLinq.ToList());
+        }
+
+        static void Second(Context dbContext)
+        {
+            var queryLinq = from organization in dbContext.Organizations
+                where organization.Address == "Гомель"
+                select new
+                {
+                    Id = organization.OrganizationID,
+                    Название = organization.Name,
+                    Форма_собственности = organization.TypeOfOwnership,
+                    Адрес = organization.Address,
+                    ФИО_руководителя = organization.DirectorFullName,
+                    Телефон_руководителя = organization.DirectorPhoneNumber,
+                    ФИО_главного_энергетика = organization.ChiefPowerEngineerFullName,
+                    Телефон_главного_энергетика = organization.ChiefPowerEngineerPhoneNumber,
+                };
+
+            var comment = "Результат выполнения запроса на ";
+            Print(comment, queryLinq.ToList());
+
+
+
+            //var queryLinq = from manufacturedProduct in dbContext.ManufacturedProducts
+            //    where manufacturedProduct.Year < 2017 && manufacturedProduct.Quarter == 3
+            //    orderby manufacturedProduct.TotalProduced descending
+            //    select new
+            //    {
+            //        manufacturedProduct.TotalProduced,
+            //        manufacturedProduct.Year,
+            //        manufacturedProduct.Quarter,
+            //        manufacturedProduct.OrganizationID
+            //    };
+
+        }
+
+        static void Third(Context dContext)
+        {
+            var queryLinq = from heatConsumption in dContext.HeatConsumptions
+                group heatConsumption by heatConsumption.TotalConsumed
+                into grouping
+                select new
+                {
+                    TotalConsumed = grouping.Key,
+                    Average = grouping.Count(),
+                    Years = from heatConsumption in grouping select heatConsumption
+                };
+
+            foreach (var VARIABLE in queryLinq)
+            {
+                
+            }
+        }
+
+        static void Fourth(Context dbContext)
+        {
+            var queryLinq = from organization in dbContext.Organizations
+                join manufacturedProduct in dbContext.ManufacturedProducts 
+                    on organization.OrganizationID equals manufacturedProduct.OrganizationID
+                select new
+                {
+                    Id = organization.OrganizationID,
+                    Название = organization.Name,
+                    Форма_собственности = organization.TypeOfOwnership,
+                    Год = manufacturedProduct.Year,
+                    Всего_произведено = manufacturedProduct.TotalProduced
+                };
+
+            var comment = "Результат выполнения запроса на ";
+            Print(comment, queryLinq.ToList());
+        }
+
+        static void Fifth(Context dbContext)
+        {
+            var queryLinq = from organization in dbContext.Organizations
+                join manufacturedProduct in dbContext.ManufacturedProducts 
+                    on organization.OrganizationID equals manufacturedProduct.OrganizationID
+                where organization.TypeOfOwnership == "частная собственность"
+                select new
+                {
+                    Id = organization.OrganizationID,
+                    Название = organization.Name,
+                    Форма_собственности = organization.TypeOfOwnership,
+                    Год = manufacturedProduct.Year,
+                    Всего_произведено = manufacturedProduct.TotalProduced
                 };
 
             var comment = "Результат выполнения запроса на ";
@@ -191,13 +263,19 @@ namespace HeatConsumptionOrganization
                 ChiefPowerEngineerPhoneNumber = "+375445463978"
             };
 
+
+            dbContext.Organizations.Add(organization);
+            dbContext.SaveChanges();
+        }
+
+        static void Seventh(Context dbContext)
+        {
             var typeOfProduct = new TypeOfProduct
             {
                 Name = "кирпичи",
                 Unit = "шт."
             };
 
-            dbContext.Organizations.Add(organization);
             dbContext.TypeOfProducts.Add(typeOfProduct);
             dbContext.SaveChanges();
         }
