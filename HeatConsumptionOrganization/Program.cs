@@ -216,19 +216,29 @@ namespace HeatConsumptionOrganization
 
         static void HeatConsumptionGroupBy(Context dContext)
         {
-            var queryLinq = from heatConsumption in dContext.HeatConsumptions
-                group heatConsumption by heatConsumption.TotalConsumed
+            Console.WriteLine("3. Группировка данных по адресу организации: \n");
+
+            var groupingByAddress = from organization in dContext.Organizations
+                group organization by organization.Address
                 into grouping
                 select new
                 {
-                    TotalConsumed = grouping.Key,
-                    Average = grouping.Count(),
-                    Years = from heatConsumption in grouping select heatConsumption
+                    Address = grouping.Key,
+                    Count = grouping.Count(),
+                    Organizations = from organization in grouping select organization
                 };
 
-            foreach (var VARIABLE in queryLinq)
+            foreach (var @group in groupingByAddress)
             {
-                
+                Console.WriteLine("Количество организаций расположенных в \"{0}\": {1}", @group.Address, @group.Count);
+                int i = 0;
+                foreach (var organization in @group.Organizations)
+                {
+                    i++;
+                    Console.WriteLine(i + ". " + organization.Name);
+                }
+
+                Console.WriteLine();
             }
         }
 
