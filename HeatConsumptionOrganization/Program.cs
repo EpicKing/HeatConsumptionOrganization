@@ -293,7 +293,7 @@ namespace HeatConsumptionOrganization
             dbContext.Organizations.Add(organization);
             dbContext.SaveChanges();
 
-            Console.WriteLine("6. Была произведена вставка данных в таблину на стороне ОДИН\n");
+            Console.WriteLine("6. Была произведена вставка данных в таблицу на стороне ОДИН\n");
         }
 
         static void InsertIntoManys(Context dbContext)
@@ -312,7 +312,7 @@ namespace HeatConsumptionOrganization
             dbContext.TypeOfProducts.Add(typeOfProduct);
             dbContext.SaveChanges();
 
-            Console.WriteLine("7. Была произведена вставка данных в таблину на стороне МНОГО\n");
+            Console.WriteLine("7. Была произведена вставка данных в таблицу на стороне МНОГО\n");
         }
 
 
