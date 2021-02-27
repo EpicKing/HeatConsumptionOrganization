@@ -27,7 +27,6 @@ namespace HeatConsumptionOrganization
                 Console.ReadKey();
                 SelectOrganizationsByAddress(dbContext);
 
-                Console.WriteLine("====== Будет выполнена группировка данных (нажмите любую клавишу) ========");
                 Console.ReadKey();
                 HeatConsumptionGroupBy(dbContext);
 
